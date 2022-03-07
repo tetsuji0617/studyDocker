@@ -14,8 +14,6 @@ RUN apt-get update && \
 RUN apt-get autoclean
 RUN apt-get install -y apache2
 
-VOLUME test_volume:/var/www/html
-
 EXPOSE 80
 CMD ["apachectl", "-D", "FOREGROUND"]
 
