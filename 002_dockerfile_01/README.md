@@ -5,7 +5,14 @@
 :~/002_dockerfile_01$ vi Dockerfile
 
 更新内容は下記の通り
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y tzdata
+ENV TZ=Asia/Tokyo
 ```
+
+- FROM:ベースとなるイメージを取得する。上記の例はubuntuイメージの最新を取得する。
+- RUN:コマンドを実行し、その結果を確定させます。上の例はubuntuのモジュールの最新かとtzdataをインストール。
+- ENV:環境変数を設定する。上記の例はタイムゾーンを東京にセット。
 
 
 ### dockerのイメージ作成
