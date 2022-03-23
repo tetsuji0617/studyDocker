@@ -25,7 +25,7 @@ $ docker images
 $ docker rmi [IMAGE ID]
 ```
 
-## コンテナの削除
+## コンテナの作成
 
 ```
 $ docker run -it [REEPOSITORY NAME]
