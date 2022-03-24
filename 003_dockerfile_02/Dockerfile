@@ -15,8 +15,8 @@ RUN apt-get autoclean
 RUN apt-get install -y apache2
 
 RUN mkdir -p /var/www/html
-RUN echo 'Hello Docker volume' >> /var/www/html/index.html
-RUN echo 'ServerName www.example.com:80' > /etc/apache2/apache2.conf
+RUN echo 'Hello Docker world' > /var/www/html/index.html
+RUN echo 'ServerName www.example.com:80' >> /etc/apache2/apache2.conf
 VOLUME ["/var/www/html"]
 
 EXPOSE 80
