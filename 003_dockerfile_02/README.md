@@ -60,3 +60,9 @@ dockerのコンテナを作成する。
 ```
 $ docker run -p 80:80 pedalclecle/ubuntu:0.3.0 
 ```
+
+コンテナの動作確認
+```
+$ curl http://localhost
+Hello Docker world
+```
