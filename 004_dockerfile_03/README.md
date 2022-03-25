@@ -29,14 +29,15 @@ CMD ["apachectl", "-D", "FOREGROUND"]
 ```
 
 
-### dockerのイメージ作成
-dockerのイメージを作成する前に現状のイメージを確認する。
+### docker volume の作成
+dockerコンテナが参照するvolumeを作成する。
 ```
 $ docker volume create test_volume
 test_volume
 ```
 
 ### docker volume の確認
+作成したvolumeの確認を行う。
 ```
 $ docker volume ls
 DRIVER    VOLUME NAME
@@ -44,6 +45,7 @@ local     test_volume
 ```
 
 ### docker volume の詳細を確認
+作成したvolumeの詳細を確認する。
 ```
 $ docker volume inspect test_volume
 [
@@ -59,7 +61,8 @@ $ docker volume inspect test_volume
 ]
 ```
 
-### 動作確認用のファイルを配置する。
+### 動作確認用のファイルを配置する
+作成したvolumeにファイルを配置する。ローカル側のディレクトリへのファイル配置にはroot権限が必要。
 ```
 $ sudo su - 
 
@@ -68,7 +71,8 @@ $ echo 'Hello docker volume world' >> /var/lib/docker/volumes/test_volume/_data/
 $ exit
 ```
 
-### docker image の作成とcontainerの作成と動作確認
+### docker imageの作成とcontainerの作成と動作確認
+動作確認を行う。
 ```
 $ docker build -t pedalclecle/ubuntu:0.4.0 .
 
