@@ -1,0 +1,105 @@
+## kubernetesでtomcatのサンプルアプリを動作させる
+
+### tomcatのサンプルアプリをダウンロードする
+
+```
+$ wget https://tomcat.apache.org/tomcat-5.5-doc/appdev/sample/sample.war .
+```
+
+### Dockerfileを作成する
+
+```
+FROM tomcat:latest
+
+COPY sample.war $CATALINA_HOME/webapps/
+```
+
+### Imageを作成する
+
+Imageの作成はworkerサーバで行う必要がある。
+
+```
+$ docker build -t tomcat/sample:9.0 .
+```
+
+### kubenetesのyamlファイルを作成する
+
+```
+ 
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tomcat-prod
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+    - name: pool-ips  # MetallbのIPプール名
+      protocol: layer2
+      addresses:
+      - 192.168.192.250-192.168.192.254
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-service-lb # Service(LoadBalancer) の名前
+  namespace: tomcat-prod
+  annotations:
+    metallb.universe.tf/address-pool: pool-ips # MetallbのIPプール名
+spec:
+  type: LoadBalancer
+  ports:
+    - name: tomcat-service-lb
+      protocol: TCP
+      port: 8080 # ServiceのIPでlistenするポート
+      nodePort: 30080 # nodeのIPでlistenするポート（30000-32767）
+      targetPort: 8080 # 転送先(コンテナ)でlistenしているPort番号のポート
+  selector: # service のselctorは、matchLabels 扱いになる
+    app: tomcat-pod # 転送先の Pod のラベル
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deployment # Deployment の名前(ReplicaSetの名前もこれになる)
+  namespace: tomcat-prod
+spec:
+  selector:
+    matchLabels: # ラベルがマッチしたPodを対象とするReplicaSetの作成
+      app: tomcat-pod
+  replicas: 3
+  template: # Pod のテンプレート
+    metadata:
+      name: tomcat-pod # Pod の名前
+      namespace: tomcat-prod
+      labels: # Pod のラベル
+        app: tomcat-pod
+    spec:
+      containers: # コンテナの設定
+        - name: tomcat-container # コンテナの名前
+          image: "tomcat/sample:9.0" # イメージの名前
+          imagePullPolicy: Never
+          env:
+            - name: tomcat-container
+          ports:
+            - containerPort: 8080 # コンテナのポート
+```
+
+### kubenetesで起動
+
+```
+$ kubectl apply -f tomcat-sample.yaml
+```
+
+### サンプルにアクセスする
+
+```
+http://192.168.192.250:8080/sample
+```
+
+以上
+      protocol: layer2
