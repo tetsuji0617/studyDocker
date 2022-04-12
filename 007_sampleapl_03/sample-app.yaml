@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: tomcat-prod
+  name: sample-app-prod
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -19,44 +19,44 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tomcat-service-lb # Service(LoadBalancer) の名前
-  namespace: tomcat-prod
+  name: sample-app-service-lb # Service(LoadBalancer) の名前
+  namespace: sample-app-prod
   annotations:
     metallb.universe.tf/address-pool: pool-ips # MetallbのIPプール名
 spec:
   type: LoadBalancer
   ports:
-    - name: tomcat-service-lb
+    - name: sample-app-service-lb
       protocol: TCP
       port: 8080 # ServiceのIPでlistenするポート
       nodePort: 30080 # nodeのIPでlistenするポート（30000-32767）
       targetPort: 8080 # 転送先(コンテナ)でlistenしているPort番号のポート
   selector: # service のselctorは、matchLabels 扱いになる
-    app: tomcat-pod # 転送先の Pod のラベル
+    app: sample-app-pod # 転送先の Pod のラベル
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tomcat-deployment # Deployment の名前(ReplicaSetの名前もこれになる)
-  namespace: tomcat-prod
+  name: sample-app-deployment # Deployment の名前(ReplicaSetの名前もこれになる)
+  namespace: sample-app-prod
 spec:
   selector:
     matchLabels: # ラベルがマッチしたPodを対象とするReplicaSetの作成
-      app: tomcat-pod
-  replicas: 3
+      app: sample-app-pod
+  replicas: 2
   template: # Pod のテンプレート
     metadata:
-      name: tomcat-pod # Pod の名前
-      namespace: tomcat-prod
+      name: sample-app-pod # Pod の名前
+      namespace: sample-app-prod
       labels: # Pod のラベル
-        app: tomcat-pod
+        app: sample-app-pod
     spec:
       containers: # コンテナの設定
-        - name: tomcat-container # コンテナの名前
-          image: "tomcat/sample:9.0" # イメージの名前
+        - name: sample-app-container # コンテナの名前
+          image: "javasampleapp:0.0.1" # イメージの名前
           imagePullPolicy: Never
           env:
-            - name: tomcat-container
+            - name: sample-app-container
           ports:
             - containerPort: 8080 # コンテナのポート
 
